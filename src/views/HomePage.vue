@@ -28,23 +28,6 @@
         @didDismiss="onDeleteAlertDismiss"
       />
 
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">園遊會點餐系統</ion-title>
-          <ion-buttons slot="end">
-            <ion-button
-              color="danger"
-              fill="clear"
-              size="small"
-              @click="openDeleteAllOrdersAlert"
-              aria-label="刪除所有訂單"
-            >
-              <ion-icon :icon="trashOutline" slot="icon-only" />
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-
       <div class="home-wrapper ion-padding">
         <div class="home-container">
           <ion-card button @click="goTo('/menu')">

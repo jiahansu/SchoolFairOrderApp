@@ -3,11 +3,6 @@
     <PageHeader title="訂單管理" />
 
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">訂單管理</ion-title>
-        </ion-toolbar>
-      </ion-header>
 
       <div class="segment-wrapper">
         <ion-segment v-model="activeSegment">
@@ -35,8 +30,15 @@
           </ion-list>
           -->
 
-          <div class="section-title">選擇商品</div>
           
+          <div class="summary-footer">
+            <div class="total-text">總金額：$ {{ formatPrice(totalAmount) }}</div>
+            <ion-button expand="block" color="primary" :disabled="submitting" @click="submitOrder">
+              送出訂單
+            </ion-button>
+          </div>
+          <ion-content>
+         <div class="section-title">選擇商品</div>
           <div v-if="loadingMenu" class="center-block">
             <ion-spinner name="crescent"></ion-spinner>
           </div>
@@ -85,13 +87,7 @@
           <div v-else class="center-block empty-text">
             尚未選擇任何商品。
           </div>
-
-          <div class="summary-footer">
-            <div class="total-text">總金額：$ {{ formatPrice(totalAmount) }}</div>
-            <ion-button expand="block" color="primary" :disabled="submitting" @click="submitOrder">
-              送出訂單
-            </ion-button>
-          </div>
+          </ion-content>
         </ion-segment-content>
 
         <!-- 製作中（NEW） -->
@@ -482,7 +478,7 @@ onUnmounted(() => {
 
 .summary-footer {
   position: sticky;
-  bottom: 0;
+  top: 0;
   z-index: 10;
   padding: 12px 16px 24px;
   background: var(--ion-background-color, #fff);
@@ -490,6 +486,7 @@ onUnmounted(() => {
 }
 
 .total-text {
+  text-align: center;
   margin-bottom: 8px;
   font-size: 18px;
   font-weight: bold;

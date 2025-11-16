@@ -3,11 +3,6 @@
     <PageHeader title="商品管理" />
 
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">商品管理</ion-title>
-        </ion-toolbar>
-      </ion-header>
 
       <ion-refresher slot="fixed" @ionRefresh="handleRefresh">
         <ion-refresher-content pulling-text="下拉重新整理"></ion-refresher-content>
@@ -157,6 +152,9 @@ import {
   IonInput,
   IonSpinner,
   IonToast,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
 } from '@ionic/vue';
 import PageHeader from '../components/PageHeader.vue';
 import { getPhotoUrl } from '../utils/url';

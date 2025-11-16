@@ -3,11 +3,6 @@
     <PageHeader title="取餐公告欄" />
 
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">取餐公告欄</ion-title>
-        </ion-toolbar>
-      </ion-header>
 
       <div class="board-container">
         <section class="board-section preparing">
