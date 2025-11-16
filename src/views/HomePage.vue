@@ -51,9 +51,10 @@
                 <ion-label>訂單狀態</ion-label>
                 <ion-select v-model="reportStatus" interface="popover">
                   <ion-select-option value="ALL">全部</ion-select-option>
-                  <ion-select-option value="NEW">NEW</ion-select-option>
-                  <ion-select-option value="COMPLETED">COMPLETED</ion-select-option>
-                  <ion-select-option value="CANCELED">CANCELED</ion-select-option>
+                  <ion-select-option value="NEW">製作中</ion-select-option>
+                  <ion-select-option value="AWAITING">帶取餐</ion-select-option>
+                  <ion-select-option value="COMPLETED">已完成</ion-select-option>
+                  <ion-select-option value="CANCELED">已取消</ion-select-option>
                 </ion-select>
               </ion-item>
               <ion-button expand="block" color="primary" class="download-button" @click="downloadReport">

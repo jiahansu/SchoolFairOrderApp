@@ -1,6 +1,6 @@
 // 簡單的 API client，基於 fetch 封裝
 
-const BASE_URL = (import.meta && import.meta.env && import.meta.env.VITE_API_BASE_URL) || 'http://localhost:8000';
+const BASE_URL = (import.meta && import.meta.env && import.meta.env.VITE_API_BASE_URL) || 'https://4xrop09rx746lp-8000.proxy.runpod.net';
 
 async function request(path, options = {}) {
   const url = `${BASE_URL}${path}`;
