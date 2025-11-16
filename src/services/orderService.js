@@ -58,6 +58,13 @@ async function getOrderStats(status) {
   return request(`/orders/stats${query}`);
 }
 
+// 刪除所有訂單
+async function deleteAllOrders() {
+  return request('/orders', {
+    method: 'DELETE',
+  });
+}
+
 // 下載訂單報表 Excel
 // status: 'ALL' | 'NEW' | 'COMPLETED' | 'CANCELED'
 // 若為 'ALL' 則不帶 status 參數，需後端配合將 status 預設改為 None 表示全部
@@ -79,5 +86,6 @@ export {
   completeOrder,
   listOrderStatuses,
   getOrderStats,
+  deleteAllOrders,
   downloadOrdersReport,
 };

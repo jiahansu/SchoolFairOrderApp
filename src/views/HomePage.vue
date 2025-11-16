@@ -3,13 +3,45 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title>園遊會點餐系統</ion-title>
+        <ion-buttons slot="end">
+          <ion-button
+            color="danger"
+            fill="clear"
+            size="small"
+            @click="openDeleteAllOrdersAlert"
+            aria-label="刪除所有訂單"
+          >
+            <ion-icon :icon="trashOutline" slot="icon-only" />
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
+      <ion-alert
+        :is-open="isDeleteAlertOpen"
+        header="危險操作"
+        sub-header="刪除所有訂單"
+        message="此動作會永久刪除所有訂單資料，請輸入密碼確認："
+        :inputs="deleteAlertInputs"
+        :buttons="deleteAlertButtons"
+        @didDismiss="onDeleteAlertDismiss"
+      />
+
       <ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">園遊會點餐系統</ion-title>
+          <ion-buttons slot="end">
+            <ion-button
+              color="danger"
+              fill="clear"
+              size="small"
+              @click="openDeleteAllOrdersAlert"
+              aria-label="刪除所有訂單"
+            >
+              <ion-icon :icon="trashOutline" slot="icon-only" />
+            </ion-button>
+          </ion-buttons>
         </ion-toolbar>
       </ion-header>
 
@@ -85,13 +117,62 @@ import {
   IonSelect,
   IonSelectOption,
   IonButton,
+  IonButtons,
+  IonIcon,
+  IonAlert,
 } from '@ionic/vue';
 import { useRouter } from 'vue-router';
-import { downloadOrdersReport } from '../services/orderService';
+import { trashOutline } from 'ionicons/icons';
+import { downloadOrdersReport, deleteAllOrders } from '../services/orderService';
 
 const router = useRouter();
 
 const reportStatus = ref('ALL');
+const isDeleteAlertOpen = ref(false);
+
+const deleteAlertInputs = [
+  {
+    name: 'password',
+    type: 'password',
+    placeholder: '請輸入密碼',
+    attributes: {
+      autocomplete: 'off',
+    },
+  },
+];
+
+const deleteAlertButtons = [
+  {
+    text: '取消',
+    role: 'cancel',
+  },
+  {
+    text: '確定刪除',
+    role: 'confirm',
+    handler: async (data) => {
+      if (!data || data.password !== 'bryan') {
+        window.alert('密碼錯誤');
+        return false;
+      }
+      try {
+        await deleteAllOrders();
+        window.alert('已刪除所有訂單');
+      } catch (error) {
+        const msg = error && error.message ? error.message : String(error);
+        window.alert(`刪除失敗：${msg}`);
+      }
+      return true;
+    },
+  },
+];
+
+function openDeleteAllOrdersAlert() {
+  isDeleteAlertOpen.value = true;
+}
+
+function onDeleteAlertDismiss() {
+  isDeleteAlertOpen.value = false;
+}
 
 function goTo(path) {
   router.push(path);

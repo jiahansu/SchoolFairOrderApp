@@ -1,10 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-title>取餐公告欄</ion-title>
-      </ion-toolbar>
-    </ion-header>
+    <PageHeader title="取餐公告欄" />
 
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
@@ -76,14 +72,12 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
   IonBadge,
   IonSpinner,
   IonToast,
 } from '@ionic/vue';
+import PageHeader from '../components/PageHeader.vue';
 import { listOrders } from '../services/orderService';
 import { formatTime } from '../utils/datetime';
 

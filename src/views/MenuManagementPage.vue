@@ -1,10 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-title>商品管理</ion-title>
-      </ion-toolbar>
-    </ion-header>
+    <PageHeader title="商品管理" />
 
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
@@ -34,7 +30,7 @@
         <ion-list v-if="items.length">
           <ion-item v-for="item in items" :key="item.id" class="menu-item">
             <ion-avatar slot="start" v-if="item.photo_url">
-              <img :src="item.photo_url" :alt="item.name" />
+              <img :src="getPhotoUrl(item.photo_url)" :alt="item.name" />
             </ion-avatar>
 
             <ion-label>
@@ -147,9 +143,6 @@
 import { ref, onMounted, nextTick } from 'vue';
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
   IonRefresher,
   IonRefresherContent,
@@ -165,6 +158,8 @@ import {
   IonSpinner,
   IonToast,
 } from '@ionic/vue';
+import PageHeader from '../components/PageHeader.vue';
+import { getPhotoUrl } from '../utils/url';
 import { listMenuItems, createMenuItem, updateMenuItem, deleteMenuItem } from '../services/menuService';
 
 const items = ref([]);

@@ -1,10 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-title>訂單管理</ion-title>
-      </ion-toolbar>
-    </ion-header>
+    <PageHeader title="訂單管理" />
 
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
@@ -40,7 +36,7 @@
           -->
 
           <div class="section-title">選擇商品</div>
-
+          
           <div v-if="loadingMenu" class="center-block">
             <ion-spinner name="crescent"></ion-spinner>
           </div>
@@ -48,7 +44,7 @@
                     <ion-list v-if="menuItems.length">
               <ion-item v-for="item in menuItems" :key="item.id" class="menu-item">
                 <ion-avatar slot="start">
-                  <img :src="item.photo_url || '/favicon.png'" :alt="item.name" />
+                  <img :src="item.photo_url ? getPhotoUrl(item.photo_url) : '/favicon.png'" :alt="item.name" />
                 </ion-avatar>
 
                 <ion-label>
@@ -185,9 +181,6 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
   IonSegment,
   IonSegmentButton,
@@ -204,6 +197,8 @@ import {
   onIonViewDidEnter,
   onIonViewDidLeave,
 } from '@ionic/vue';
+import PageHeader from '../components/PageHeader.vue';
+import { getPhotoUrl } from '../utils/url';
 import { listMenuItems } from '../services/menuService';
 import { createOrder, listOrders, cancelOrder, awaitOrder, completeOrder } from '../services/orderService';
 import { formatTime } from '../utils/datetime';
@@ -427,13 +422,16 @@ watch(activeSegment, (newVal) => {
 });
 
 onMounted(() => {
-  fetchMenu();
-  fetchNewOrders();
-  fetchAwaitingOrders();
-  setupRefreshInterval();
+  //fetchMenu();
+  //fetchNewOrders();
+  //fetchAwaitingOrders();
+  //setupRefreshInterval();
 });
 
 onIonViewDidEnter(() => {
+  fetchMenu();
+  fetchNewOrders();
+  fetchAwaitingOrders();
   setupRefreshInterval();
 });
 
@@ -483,7 +481,12 @@ onUnmounted(() => {
 }
 
 .summary-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
   padding: 12px 16px 24px;
+  background: var(--ion-background-color, #fff);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .total-text {
