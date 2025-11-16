@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title>園遊會點餐系統</ion-title>
+        <ion-title>頂溪國小507班園遊會點餐系統</ion-title>
         <ion-buttons slot="end">
           <ion-button
             color="danger"
