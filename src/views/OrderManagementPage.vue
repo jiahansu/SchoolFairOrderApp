@@ -14,7 +14,7 @@
       </ion-header>
 
       <div class="segment-wrapper">
-        <ion-segment value="create">
+        <ion-segment v-model="activeSegment">
           <ion-segment-button value="create" content-id="create-tab">
             <ion-label>新增訂單</ion-label>
           </ion-segment-button>
@@ -110,7 +110,7 @@
             <ion-item v-for="order in newOrders" :key="order.id" class="order-item">
               <ion-label>
                 <h2>
-                  <ion-chip color="warning">NEW</ion-chip>
+                  <ion-chip color="warning">製作中</ion-chip>
                   <span class="order-code">{{ order.order_code }}</span>
                   <span class="customer-name">{{ order.customer_name }}</span>
                 </h2>
@@ -151,7 +151,7 @@
             <ion-item v-for="order in awaitingOrders" :key="order.id" class="order-item">
               <ion-label>
                 <h2>
-                  <ion-chip color="secondary">AWAITING</ion-chip>
+                  <ion-chip color="secondary">未取餐</ion-chip>
                   <span class="order-code">{{ order.order_code }}</span>
                   <span class="customer-name">{{ order.customer_name }}</span>
                 </h2>
@@ -182,7 +182,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import {
   IonPage,
   IonHeader,
@@ -201,6 +201,8 @@ import {
   IonSpinner,
   IonChip,
   toastController,
+  onIonViewDidEnter,
+  onIonViewDidLeave,
 } from '@ionic/vue';
 import { listMenuItems } from '../services/menuService';
 import { createOrder, listOrders, cancelOrder, awaitOrder, completeOrder } from '../services/orderService';
@@ -217,6 +219,32 @@ const newOrders = ref([]); // status NEW
 const awaitingOrders = ref([]); // status AWAITING
 const loadingNewOrders = ref(false);
 const loadingAwaiting = ref(false);
+
+const activeSegment = ref('create');
+
+const REFRESH_INTERVAL = 15000;
+let refreshIntervalId = null;
+
+function clearRefreshInterval() {
+  if (refreshIntervalId !== null) {
+    clearInterval(refreshIntervalId);
+    refreshIntervalId = null;
+  }
+}
+
+function setupRefreshInterval() {
+  clearRefreshInterval();
+
+  if (activeSegment.value === 'preparing' || activeSegment.value === 'awaiting') {
+    refreshIntervalId = setInterval(() => {
+      if (activeSegment.value === 'preparing') {
+        fetchNewOrders();
+      } else if (activeSegment.value === 'awaiting') {
+        fetchAwaitingOrders();
+      }
+    }, REFRESH_INTERVAL);
+  }
+}
 
 async function showToast(message, color = 'primary') {
   const toast = await toastController.create({
@@ -389,10 +417,32 @@ async function completeAwaiting(order) {
   }
 }
 
+watch(activeSegment, (newVal) => {
+  if (newVal === 'preparing') {
+    fetchNewOrders();
+  } else if (newVal === 'awaiting') {
+    fetchAwaitingOrders();
+  }
+  setupRefreshInterval();
+});
+
 onMounted(() => {
   fetchMenu();
   fetchNewOrders();
   fetchAwaitingOrders();
+  setupRefreshInterval();
+});
+
+onIonViewDidEnter(() => {
+  setupRefreshInterval();
+});
+
+onIonViewDidLeave(() => {
+  clearRefreshInterval();
+});
+
+onUnmounted(() => {
+  clearRefreshInterval();
 });
 </script>
 
