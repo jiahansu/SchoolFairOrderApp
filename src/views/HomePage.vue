@@ -44,7 +44,7 @@
               <ion-card-title>訂單管理</ion-card-title>
             </ion-card-header>
             <ion-card-content>
-              協助顧客點餐，管理 NEW 訂單狀態。
+              協助顧客點餐，管理各種訂單狀態。
             </ion-card-content>
           </ion-card>
 
