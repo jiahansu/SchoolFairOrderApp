@@ -97,7 +97,7 @@
                 <ion-input
                   v-model.number="form.unitPrice"
                   type="number"
-                  min="0"
+                  min="-5"
                   step="1"
                   required
                   placeholder="請輸入單價"

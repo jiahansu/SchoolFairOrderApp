@@ -21,17 +21,14 @@
       <ion-segment-view>
         <!-- 新增訂單 -->
         <ion-segment-content id="create-tab" class="tab-content">
-          <!-- 顧客姓名如未使用可保留日後擴充
-          <ion-list>
-            <ion-item>
-              <ion-label position="stacked">顧客姓名</ion-label>
-              <ion-input v-model="customerName" placeholder="請輸入顧客姓名"></ion-input>
-            </ion-item>
-          </ion-list>
-          -->
-
           
           <div class="summary-footer">
+             <ion-list>
+                <ion-item>
+              <ion-input  label="客戶姓名" v-model="customerName" label-placement="floating" placeholder="請輸入顧客姓名"></ion-input>
+              <ion-toggle :checked="false" slot="end" v-model="isPreOrder">預購</ion-toggle>
+              </ion-item>
+            </ion-list>
             <div class="total-text">總金額：$ {{ formatPrice(totalAmount) }}</div>
             <ion-button expand="block" color="primary" :disabled="submitting" @click="submitOrder">
               送出訂單
@@ -46,7 +43,7 @@
                     <ion-list v-if="menuItems.length">
               <ion-item v-for="item in menuItems" :key="item.id" class="menu-item">
                 <ion-avatar slot="start">
-                  <img :src="item.photo_url ? getPhotoUrl(item.photo_url) : '/favicon.png'" :alt="item.name" />
+                  <img :src="item.photo_url ? getPhotoUrl(item.photo_url) : '/cookie.png'" :alt="item.name" />
                 </ion-avatar>
 
                 <ion-label>
@@ -146,6 +143,7 @@
                   <ion-chip color="secondary">未取餐</ion-chip>
                   <span class="order-code">{{ order.order_code }}</span>
                   <span class="customer-name">{{ order.customer_name }}</span>
+                  <ion-badge color="warning" style="margin-left: 8px;" v-if="order.preorder">預購</ion-badge>
                 </h2>
                 <p>
                   金額：$ {{ formatPrice(order.total_price) }}
@@ -186,12 +184,15 @@ import {
   IonList,
   IonItem,
   IonAvatar,
-  IonButton,
+  IonButton,    
   IonSpinner,
   IonChip,
+  IonToggle,
+  IonBadge,
   toastController,
   onIonViewDidEnter,
   onIonViewDidLeave,
+  IonInput
 } from '@ionic/vue';
 import PageHeader from '../components/PageHeader.vue';
 import { getPhotoUrl } from '../utils/url';
@@ -212,6 +213,7 @@ const loadingNewOrders = ref(false);
 const loadingAwaiting = ref(false);
 
 const activeSegment = ref('create');
+const isPreOrder = ref(false);
 
 const REFRESH_INTERVAL = 15000;
 let refreshIntervalId = null;
@@ -321,6 +323,7 @@ async function fetchAwaitingOrders() {
   try {
     loadingAwaiting.value = true;
     const data = await listOrders('AWAITING');
+    //console.log(data);
     awaitingOrders.value = data || [];
   } catch (err) {
     console.error(err);
@@ -333,20 +336,28 @@ async function fetchAwaitingOrders() {
 function resetCreateForm() {
   customerName.value = '';
   quantities.value = {};
+  isPreOrder.value = false;
 }
 
 async function submitOrder() {
   try {
     // 若未使用顧客姓名，可略過檢查
-    if (!cartItems.value.length) {
+    if (!cartItems.value.length && cartItems.value) {
       showToast('請至少選擇一項商品', 'warning');
       return;
     }
+
+    const total_price = cartItems.value.reduce((sum, ci) => sum + ci.line_total, 0);
+    if (total_price <= 0) {
+      showToast('訂單總金額必須大於零', 'warning');
+      return;
+    } 
 
     submitting.value = true;
 
     const payload = {
       customer_name: customerName.value,
+      preorder: isPreOrder.value,
       items: cartItems.value.map((ci) => ({
         menu_item_id: ci.menu_item_id,
         quantity: ci.quantity,
