@@ -102,6 +102,7 @@
                   <ion-chip color="warning">製作中</ion-chip>
                   <span class="order-code">{{ order.order_code }}</span>
                   <span class="customer-name">{{ order.customer_name }}</span>
+                  <ion-badge color="warning" style="margin-left: 8px;" v-if="order.preorder">預購</ion-badge>
                 </h2>
                 <p>
                   金額：$ {{ formatPrice(order.total_price) }}

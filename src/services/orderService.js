@@ -12,11 +12,16 @@ async function createOrder(payload) {
   });
 }
 
-// 取得訂單列表，可依狀態過濾
-async function listOrders(status) {
+// 取得訂單列表，可依狀態與預購過濾
+async function listOrders(status, preorder) {
+    //console.log(preorder)
   const params = new URLSearchParams();
   if (status) {
     params.set('status', status);
+  }
+  // 後端以 `preorder` 作為查詢參數別名，需傳遞 'true' 或 'false'
+  if(preorder !== undefined){
+    params.set('preorder', preorder ? 'true' : 'false');
   }
   const query = params.toString() ? `?${params.toString()}` : '';
   return request(`/orders${query}`);

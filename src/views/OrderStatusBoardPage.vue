@@ -3,7 +3,10 @@
     <PageHeader title="取餐公告欄" />
 
     <ion-content :fullscreen="true">
-
+      <div class="preorder-row">
+        <ion-label>預購</ion-label>
+        <ion-toggle :checked="preorder" @ionChange="onPreorderChange" aria-label="預購切換"></ion-toggle>
+      </div>
       <div class="board-container">
         <section class="board-section preparing">
           <div class="section-header">
@@ -16,10 +19,17 @@
           </div>
           <div v-else>
             <div v-if="newOrders.length" class="order-grid">
-              <div v-for="order in newOrders" :key="order.id" class="board-card">
-                <div class="order-code">{{ order.order_code }}</div>
+              <div v-for="order in newOrders" :key="order.id">
+                  <ion-card color="primary">
+                    <ion-card-header>
+                    <ion-card-title>{{ cleanOrderCode(order.order_code) }}</ion-card-title>
+                    <ion-card-subtitle>{{ order.customer_name }}</ion-card-subtitle>
+                    </ion-card-header>
+                    <!--<ion-card-content>{{ formatTime(order.created_at) }}</ion-card-content>-->
+                </ion-card>
+<!--                 <div class="order-code">{{ cleanOrderCode(order.order_code) }}</div>
                 <div class="customer-name">{{ order.customer_name }}</div>
-                <div class="time-text">建立時間：{{ formatTime(order.created_at) }}</div>
+                <div class="time-text">建立時間：{{ formatTime(order.created_at) }}</div> -->
               </div>
             </div>
             <div v-else class="center-block empty-text">
@@ -39,10 +49,17 @@
           </div>
           <div v-else>
             <div v-if="filteredCompletedOrders.length" class="order-grid">
-              <div v-for="order in filteredCompletedOrders" :key="order.id" class="board-card ready-card">
-                <div class="order-code">{{ order.order_code }}</div>
+              <div v-for="order in filteredCompletedOrders" :key="order.id">
+                <ion-card color="success">
+                    <ion-card-header>
+                    <ion-card-title>{{ cleanOrderCode(order.order_code) }}</ion-card-title>
+                    <ion-card-subtitle>{{ order.customer_name }}</ion-card-subtitle>
+                    </ion-card-header>
+                    <!--<ion-card-content>{{ formatTime(order.created_at) }}</ion-card-content>-->
+                </ion-card>
+<!--                 <div class="order-code">{{ cleanOrderCode(order.order_code) }}</div>
                 <div class="customer-name">{{ order.customer_name }}</div>
-                <div class="time-text">完成時間：{{ formatTime(order.created_at) }}</div>
+                <div class="time-text">完成時間：{{ formatTime(order.created_at) }}</div> -->
               </div>
             </div>
             <div v-else class="center-block empty-text">
@@ -71,6 +88,13 @@ import {
   IonBadge,
   IonSpinner,
   IonToast,
+  IonToggle,
+  IonLabel,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardContent
 } from '@ionic/vue';
 import PageHeader from '../components/PageHeader.vue';
 import { listOrders } from '../services/orderService';
@@ -80,6 +104,7 @@ const newOrders = ref([]);
 const completedOrders = ref([]);
 const loading = ref(false);
 const intervalId = ref(null);
+const preorder = ref(false);
 
 const toast = ref({
   isOpen: false,
@@ -96,6 +121,17 @@ function showToast(message, color = 'primary') {
   toast.value.isOpen = true;
 }
 
+function cleanOrderCode(code) {
+  if (code == null) return '';
+  return String(code).replace(/^ORD-/, '');
+}
+
+const onPreorderChange = (event) => {
+    //console.log("event: "+event.detail.checked);
+    preorder.value = event.detail.checked;
+  fetchOrders(preorder.value);
+};
+
 const filteredCompletedOrders = computed(() => {
   const now = new Date();
   const filtered = (completedOrders.value || []).filter((order) => {
@@ -111,12 +147,12 @@ const filteredCompletedOrders = computed(() => {
   return filtered.slice(0, MAX_COMPLETED_ORDERS_DISPLAY);
 });
 
-async function fetchOrders() {
+async function fetchOrders(preorder) {
   try {
     loading.value = true;
     const [newData, completedData] = await Promise.all([
-      listOrders('NEW'),
-      listOrders('AWAITING'),
+      listOrders('NEW', preorder),
+      listOrders('AWAITING', preorder),
     ]);
     newOrders.value = newData || [];
     completedOrders.value = completedData || [];
@@ -129,8 +165,8 @@ async function fetchOrders() {
 }
 
 onMounted(() => {
-  fetchOrders();
-  const id = setInterval(fetchOrders, 15000);
+  fetchOrders(preorder.value);
+  const id = setInterval(() => fetchOrders(preorder.value), 15000);
   intervalId.value = id;
 });
 
@@ -146,6 +182,14 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+.preorder-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
 }
 
 .board-section {
