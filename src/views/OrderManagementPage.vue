@@ -40,7 +40,7 @@
             <ion-spinner name="crescent"></ion-spinner>
           </div>
           <div v-else>
-                    <ion-list v-if="menuItems.length">
+            <ion-list v-if="menuItems.length" style="padding-bottom:100px">
               <ion-item v-for="item in menuItems" :key="item.id" class="menu-item">
                 <ion-avatar slot="start">
                   <img :src="item.photo_url ? getPhotoUrl(item.photo_url) : '/cookie.png'" :alt="item.name" />
@@ -69,7 +69,7 @@
           </div>
 
           <div class="section-title">訂單摘要</div>
-          <ion-list v-if="cartItems.length">
+          <ion-list v-if="cartItems.length" style="padding-bottom:200px">
             <ion-item v-for="ci in cartItems" :key="ci.menu_item_id">
               <ion-label>
                 <h2>{{ ci.item_name }}</h2>
@@ -193,7 +193,9 @@ import {
   toastController,
   onIonViewDidEnter,
   onIonViewDidLeave,
-  IonInput
+  IonInput,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent
 } from '@ionic/vue';
 import PageHeader from '../components/PageHeader.vue';
 import { getPhotoUrl } from '../utils/url';
@@ -531,5 +533,11 @@ onUnmounted(() => {
 
 .menu-item {
   --min-height: 72px;
+}
+
+.no-more-items ion-label {
+  width: 100%;
+  text-align: center;
+  color: var(--ion-color-medium);
 }
 </style>
